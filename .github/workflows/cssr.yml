@@ -27,7 +27,7 @@ jobs:
       - name: Install prerequisites
         run: |
           sudo apt update
-          sudo apt install -y tmate curl unzip sudo net-tools neofetch
+          sudo apt install -y curl unzip sudo net-tools neofetch
  
       - name: Install Tailscale official script
         run: |
@@ -64,26 +64,18 @@ jobs:
             echo "biralo ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/biralo
           fi
  
-      - name: Start tmate session for SSH access
-        uses: mxschmitt/action-tmate@v3
-        with:
-          wait: false   # 🔹 only change so workflow doesn't get stuck
- 
-      - name: Show Tailscale IP and tmate info
+      - name: Show Tailscale IP
         run: |
           echo "🔗 Tailscale IP:"
           tailscale ip -4 || echo "Tailscale IP not found"
-          echo ""
-          echo "🔑 tmate SSH session:"
-          cat $HOME/.tmate.sock/ssh || true
  
-      - name: Sleep to keep VPS alive
-        run: sleep 21600  # 6 hours
+      - name: Sleep until backup time (5h 45m)
+        run: sleep 20700  # 5 hours 45 minutes
  
       - name: Backup VPS data and tailscale state
         run: |
           sudo mkdir -p /opt/vps-backup/data
-          sudo cp /var/lib/tailscale/tailscaled.state /opt/vps-backup/data/ || true
+          sudo cp /var/lib/tailscale/tailscaled.state /opt/vps-backup/data/
           sudo chown -R $USER:$USER /opt/vps-backup
           zip -r backup.zip /opt/vps-backup
  
@@ -92,3 +84,6 @@ jobs:
         with:
           name: vps-backup
           path: backup.zip
+ 
+      - name: Final sleep until job ends
+        run: sleep 900  # 15 minutes to reach full 6h
