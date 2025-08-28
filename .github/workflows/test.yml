@@ -1,11 +1,12 @@
-name: TestRunner
+name: test
 
 on:
   workflow_dispatch:
 
 jobs:
-  check:
-    runs-on: [self-hosted, BlackHero]
+  build:
+    runs-on: self-hosted  # just self-hosted, no brackets
+
     steps:
       - run: echo "Hello from BlackHero!"
       - run: whoami
