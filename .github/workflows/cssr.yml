@@ -66,6 +66,8 @@ jobs:
  
       - name: Start tmate session for SSH access
         uses: mxschmitt/action-tmate@v3
+        with:
+          wait: false   # 🔹 only change so workflow doesn't get stuck
  
       - name: Show Tailscale IP and tmate info
         run: |
@@ -73,7 +75,7 @@ jobs:
           tailscale ip -4 || echo "Tailscale IP not found"
           echo ""
           echo "🔑 tmate SSH session:"
-          cat $HOME/.tmate.sock/ssh
+          cat $HOME/.tmate.sock/ssh || true
  
       - name: Sleep to keep VPS alive
         run: sleep 21600  # 6 hours
@@ -81,7 +83,7 @@ jobs:
       - name: Backup VPS data and tailscale state
         run: |
           sudo mkdir -p /opt/vps-backup/data
-          sudo cp /var/lib/tailscale/tailscaled.state /opt/vps-backup/data/
+          sudo cp /var/lib/tailscale/tailscaled.state /opt/vps-backup/data/ || true
           sudo chown -R $USER:$USER /opt/vps-backup
           zip -r backup.zip /opt/vps-backup
  
